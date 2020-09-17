@@ -1,35 +1,32 @@
 {
-  "name": "javascript-action",
+  "name": "speedcurve-test-action",
   "version": "1.0.0",
-  "description": "JavaScript Action Template",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint --fix .",
     "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
     "test": "jest",
     "all": "npm run lint && npm run prepare && npm run test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/javascript-action.git"
+    "url": "git+https://github.com/SpeedCurve-Metrics/speedcurve-test-action.git"
   },
   "keywords": [
     "GitHub",
-    "Actions",
-    "JavaScript"
+    "Actions"
   ],
-  "author": "",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/actions/javascript-action/issues"
-  },
-  "homepage": "https://github.com/actions/javascript-action#readme",
   "dependencies": {
-    "@actions/core": "^1.2.5"
+    "@actions/core": "^1.2.5",
+    "speedcurve": "^1.4.0"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.24.0",
     "eslint": "^7.4.0",
-    "jest": "^26.1.0"
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "jest": "^26.1.0",
+    "prettier": "2.1.2"
   }
 }

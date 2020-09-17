@@ -1,20 +1,31 @@
-const core = require('@actions/core');
-const wait = require('./wait');
+const core = require("@actions/core");
+const SpeedCurve = require("speedcurve");
 
-
-// most @actions toolkit packages have async methods
 async function run() {
-  try {
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds ...`);
+  const apiKey = core.getInput("SPEEDCUVE_API_KEY");
+  const siteId = core.getInput("siteId");
+  const urlId = core.getInput("urlId");
 
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
+  core.setSecret(apiKey);
 
-    core.setOutput('time', new Date().toTimeString());
-  } catch (error) {
-    core.setFailed(error.message);
+  if (urlId) {
+    core.info(`Creating deploy for URL ${urlId}`);
+
+    try {
+      await SpeedCurve.deploys.createForUrls(apiKey, [urlId]);
+    } catch (e) {
+      core.setFailed(`Failed to trigger deploy for URL ${urlId}: ${e.message}`);
+    }
+  } else if (siteId) {
+    core.info(`Creating deploy for site ${siteId}`);
+
+    try {
+      await SpeedCurve.deploys.create(apiKey, [siteId]);
+    } catch (e) {
+      core.setFailed(`Failed to trigger deploy for site ${siteId}: ${e.message}`);
+    }
+  } else {
+    core.setFailed("Either a siteId or urlId must be provided");
   }
 }
 
