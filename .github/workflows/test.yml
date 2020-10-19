@@ -1,46 +1,22 @@
 on: [push]
 
 jobs:
-  hello_world_job:
+  # unit_tests:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - run: npm ci
+  #   - run: npm test
+
+  test_action_job:
     runs-on: ubuntu-latest
-    name: A job to say hello
+    name: Test
     steps:
-      # To use this repository's private action,
-      # you must check out the repository
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Hello world action step
-        uses: ./ # Uses an action in the root directory
-        id: hello
+      - uses: actions/checkout@v2
+      - id: speedcurve_deploy
+        uses: ./
         with:
-          who-to-greet: 'Mona the Octocat'
-      # Use the output from the `hello` step
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
-
-
-name: "units-test"
-on:
-  pull_request:
-  push:
-    branches:
-      - main
-      - 'releases/*'
-
-jobs:
-  # unit tests
-  units:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - run: npm ci
-    - run: npm test
-
-  # test action works running from the graph
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ./
-      with:
-        milliseconds: 1000
+          super_secret: ${{ secrets.SPEEDCURVE_API_KEY }}
+          site_id: 335016
+      - name: Display deploy ID
+        run: echo "The SpeedCurve deploy ID is ${{ steps.speedcurve_deploy.outputs.deploy_id }}"
