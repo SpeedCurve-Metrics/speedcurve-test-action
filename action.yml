@@ -1,5 +1,6 @@
 name: 'Run SpeedCurve Tests'
-description: 'Triggers SpeedCurve performance tests'
+description: 'Run SpeedCurve tests as part of your workflow.'
+author: 'SpeedCurve'
 inputs:
   api_key:
     description: 'SpeedCurve API token'
