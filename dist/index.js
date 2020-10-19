@@ -90,6 +90,8 @@ async function run() {
     deployResults = SpeedCurve.deploys.createForUrls(apiKey, [urlId], deployNote);
 
     if (!deployResults.length || !deployResults[0].success) {
+      await afterDeploy();
+
       core.setFailed(`Failed to trigger deploy for URL ${urlId}`);
 
       if (deployResults.length && deployResults[0].error) {
@@ -101,20 +103,17 @@ async function run() {
   } else if (siteId) {
     core.info(`Creating deploy for site ${siteId}`);
 
-    try {
-      deployResults = await SpeedCurve.deploys.create(apiKey, [siteId], deployNote);
+    deployResults = await SpeedCurve.deploys.create(apiKey, [siteId], deployNote);
 
-      if (!deployResults.length || !deployResults[0].success) {
-        core.setFailed(`Failed to trigger deploy for site ${siteId}`);
+    if (!deployResults.length || !deployResults[0].success) {
+      await afterDeploy();
 
-        if (deployResults.length && deployResults[0].error) {
-          core.error(deployResults[0].error);
-        }
+      core.setFailed(`Failed to trigger deploy for site ${siteId}`);
 
-        process.exit(1);
+      if (deployResults.length && deployResults[0].error) {
+        core.error(deployResults[0].error);
       }
-    } catch (e) {
-      core.setFailed(`Failed to trigger deploy for site ${siteId}: ${e.message}`);
+
       process.exit(1);
     }
   } else {
