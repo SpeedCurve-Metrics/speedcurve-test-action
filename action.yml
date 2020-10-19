@@ -1,6 +1,9 @@
 name: 'Run SpeedCurve Tests'
 description: 'Run SpeedCurve tests as part of your workflow.'
 author: 'SpeedCurve'
+branding:
+  icon: 'bar-chart-2'
+  color: 'blue'
 
 inputs:
   api_key:
