@@ -124,7 +124,6 @@ async function run() {
 
   await afterDeploy();
 
-  console.log(deployResults);
   core.info(`Deploy ${deployResults[0].deployId} triggered ${deployResults[0].totalTests} tests`);
   core.setOutput("deploy_id", deployResults[0].deployId);
 }
