@@ -1,13 +1,15 @@
 name: 'Run SpeedCurve Tests'
 description: 'Triggers SpeedCurve performance tests'
 inputs:
-  SPEEDCURVE_API_TOKEN:
+  api_key:
     description: 'SpeedCurve API token'
     required: true
-  siteId:
+  site_id:
     description: 'ID of the site to deploy'
-  urlId:
+  url_id:
     description: 'ID of the URL to deploy'
+  replace_origin:
+    description: 'If siteID is specified, all of the URLs in the site will be tested against this origin'
 runs:
   using: 'node12'
   main: 'dist/index.js'
