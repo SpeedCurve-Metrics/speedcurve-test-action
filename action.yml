@@ -1,6 +1,7 @@
 name: 'Run SpeedCurve Tests'
 description: 'Run SpeedCurve tests as part of your workflow.'
 author: 'SpeedCurve'
+
 inputs:
   api_key:
     description: 'SpeedCurve API token'
@@ -11,6 +12,7 @@ inputs:
     description: 'ID of the URL to deploy'
   replace_origin:
     description: 'If siteID is specified, all of the URLs in the site will be tested against this origin'
+
 runs:
   using: 'node12'
   main: 'dist/index.js'
