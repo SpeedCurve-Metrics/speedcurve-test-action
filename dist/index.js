@@ -7,33 +7,126 @@ require('./sourcemap-register.js');module.exports =
 
 const core = __webpack_require__(42186);
 const SpeedCurve = __webpack_require__(78337);
+const log = __webpack_require__(76751);
 
 async function run() {
-  const apiKey = core.getInput("SPEEDCUVE_API_KEY");
-  const siteId = core.getInput("siteId");
-  const urlId = core.getInput("urlId");
+  if (core.isDebug()) {
+    log.setLevel("verbose");
+  }
+
+  const apiKey = core.getInput("api_key", { required: true });
+  const siteId = core.getInput("site_id");
+  const urlId = core.getInput("url_id");
+  const replaceOrigin = core.getInput("replace_origin");
+
+  const workflowName = process.env["GITHUB_WORKFLOW"];
+  const runNumber = process.env["GITHUB_RUN_NUMBER"];
+  const repositoryName = process.env["GITHUB_REPOSITORY"];
+  const deployNote = `Run #${runNumber} of workflow ${workflowName} in ${repositoryName}`;
 
   core.setSecret(apiKey);
+
+  let afterDeploy = async () => {};
+
+  if (replaceOrigin) {
+    let replaceOriginUrl;
+
+    try {
+      replaceOriginUrl = new URL(replaceOrigin);
+    } catch (err) {
+      core.setFailed(`replace_origin "${replaceOrigin}" could not be parsed`);
+      process.exit(1);
+    }
+
+    if (!siteId) {
+      core.setFailed("replace_origin can only be used when site_id is specified");
+      process.exit(1);
+    }
+
+    let site;
+
+    try {
+      site = await SpeedCurve.sites.get(apiKey, siteId);
+    } catch (err) {
+      core.debug(err.message);
+      core.setFailed(`Failed to fetch site ${siteId}`);
+      process.exit(1);
+    }
+
+    core.debug(`Updating URLs in site ${siteId} with origin ${replaceOrigin.origin}`);
+
+    await Promise.all(
+      site.urls.map((url) => {
+        const parsedUrl = new URL(url.url);
+        const newUrl = parsedUrl.href.replace(parsedUrl.origin, replaceOriginUrl.origin);
+
+        core.debug(`Updating URL ${url.urlId} to ${newUrl}`);
+
+        return SpeedCurve.urls.update(apiKey, url.urlId, {
+          url: newUrl,
+        });
+      })
+    );
+
+    // Restore the URLs to their original origin after the deploy
+    afterDeploy = async () => {
+      await Promise.all(
+        site.urls.map((url) => {
+          core.debug(`Restoring URL ${url.urlId} to ${url.url}`);
+
+          return SpeedCurve.urls.update(apiKey, url.urlId, {
+            url: url.url,
+          });
+        })
+      );
+    };
+  }
+
+  let deployResults;
 
   if (urlId) {
     core.info(`Creating deploy for URL ${urlId}`);
 
-    try {
-      await SpeedCurve.deploys.createForUrls(apiKey, [urlId]);
-    } catch (e) {
-      core.setFailed(`Failed to trigger deploy for URL ${urlId}: ${e.message}`);
+    deployResults = SpeedCurve.deploys.createForUrls(apiKey, [urlId], deployNote);
+
+    if (!deployResults.length || !deployResults[0].success) {
+      core.setFailed(`Failed to trigger deploy for URL ${urlId}`);
+
+      if (deployResults.length && deployResults[0].error) {
+        core.error(deployResults[0].error);
+      }
+
+      process.exit(1);
     }
   } else if (siteId) {
     core.info(`Creating deploy for site ${siteId}`);
 
     try {
-      await SpeedCurve.deploys.create(apiKey, [siteId]);
+      deployResults = await SpeedCurve.deploys.create(apiKey, [siteId], deployNote);
+
+      if (!deployResults.length || !deployResults[0].success) {
+        core.setFailed(`Failed to trigger deploy for site ${siteId}`);
+
+        if (deployResults.length && deployResults[0].error) {
+          core.error(deployResults[0].error);
+        }
+
+        process.exit(1);
+      }
     } catch (e) {
       core.setFailed(`Failed to trigger deploy for site ${siteId}: ${e.message}`);
+      process.exit(1);
     }
   } else {
     core.setFailed("Either a siteId or urlId must be provided");
+    process.exit(1);
   }
+
+  await afterDeploy();
+
+  console.log(deployResults);
+  core.info(`Deploy ${deployResults[0].deployId} triggered ${deployResults[0].totalTests} tests`);
+  core.setOutput("deploy_id", deployResults[0].deployId);
 }
 
 run();
@@ -55,6 +148,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const os = __importStar(__webpack_require__(12087));
+const utils_1 = __webpack_require__(5278);
 /**
  * Commands
  *
@@ -108,28 +202,14 @@ class Command {
         return cmdStr;
     }
 }
-/**
- * Sanitizes an input into a string so it can be passed into issueCommand safely
- * @param input input to sanitize into a string
- */
-function toCommandValue(input) {
-    if (input === null || input === undefined) {
-        return '';
-    }
-    else if (typeof input === 'string' || input instanceof String) {
-        return input;
-    }
-    return JSON.stringify(input);
-}
-exports.toCommandValue = toCommandValue;
 function escapeData(s) {
-    return toCommandValue(s)
+    return utils_1.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A');
 }
 function escapeProperty(s) {
-    return toCommandValue(s)
+    return utils_1.toCommandValue(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A')
@@ -163,6 +243,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const command_1 = __webpack_require__(87351);
+const file_command_1 = __webpack_require__(717);
+const utils_1 = __webpack_require__(5278);
 const os = __importStar(__webpack_require__(12087));
 const path = __importStar(__webpack_require__(85622));
 /**
@@ -189,9 +271,17 @@ var ExitCode;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportVariable(name, val) {
-    const convertedVal = command_1.toCommandValue(val);
+    const convertedVal = utils_1.toCommandValue(val);
     process.env[name] = convertedVal;
-    command_1.issueCommand('set-env', { name }, convertedVal);
+    const filePath = process.env['GITHUB_ENV'] || '';
+    if (filePath) {
+        const delimiter = '_GitHubActionsFileCommandDelimeter_';
+        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
+        file_command_1.issueCommand('ENV', commandValue);
+    }
+    else {
+        command_1.issueCommand('set-env', { name }, convertedVal);
+    }
 }
 exports.exportVariable = exportVariable;
 /**
@@ -207,7 +297,13 @@ exports.setSecret = setSecret;
  * @param inputPath
  */
 function addPath(inputPath) {
-    command_1.issueCommand('add-path', {}, inputPath);
+    const filePath = process.env['GITHUB_PATH'] || '';
+    if (filePath) {
+        file_command_1.issueCommand('PATH', inputPath);
+    }
+    else {
+        command_1.issueCommand('add-path', {}, inputPath);
+    }
     process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
 }
 exports.addPath = addPath;
@@ -366,6 +462,68 @@ function getState(name) {
 }
 exports.getState = getState;
 //# sourceMappingURL=core.js.map
+
+/***/ }),
+
+/***/ 717:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+// For internal use, subject to change.
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const fs = __importStar(__webpack_require__(35747));
+const os = __importStar(__webpack_require__(12087));
+const utils_1 = __webpack_require__(5278);
+function issueCommand(command, message) {
+    const filePath = process.env[`GITHUB_${command}`];
+    if (!filePath) {
+        throw new Error(`Unable to find environment variable for file command ${command}`);
+    }
+    if (!fs.existsSync(filePath)) {
+        throw new Error(`Missing file at path: ${filePath}`);
+    }
+    fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+        encoding: 'utf8'
+    });
+}
+exports.issueCommand = issueCommand;
+//# sourceMappingURL=file-command.js.map
+
+/***/ }),
+
+/***/ 5278:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+// We use any as a valid input type
+/* eslint-disable @typescript-eslint/no-explicit-any */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * Sanitizes an input into a string so it can be passed into issueCommand safely
+ * @param input input to sanitize into a string
+ */
+function toCommandValue(input) {
+    if (input === null || input === undefined) {
+        return '';
+    }
+    else if (typeof input === 'string' || input instanceof String) {
+        return input;
+    }
+    return JSON.stringify(input);
+}
+exports.toCommandValue = toCommandValue;
+//# sourceMappingURL=utils.js.map
 
 /***/ }),
 
