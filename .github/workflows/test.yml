@@ -13,10 +13,11 @@ jobs:
     name: Test
     steps:
       - uses: actions/checkout@v2
+
       - id: speedcurve_deploy
         uses: ./
         with:
           api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
           site_id: 335016
-      - name: Display deploy ID
-        run: echo "The SpeedCurve deploy ID is ${{ steps.speedcurve_deploy.outputs.deploy_id }}"
+
+      - run: echo "The SpeedCurve deploy ID is ${{ steps.speedcurve_deploy.outputs.deploy_id }}"
