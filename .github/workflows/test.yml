@@ -16,7 +16,7 @@ jobs:
       - id: speedcurve_deploy
         uses: ./
         with:
-          super_secret: ${{ secrets.SPEEDCURVE_API_KEY }}
+          api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
           site_id: 335016
       - name: Display deploy ID
         run: echo "The SpeedCurve deploy ID is ${{ steps.speedcurve_deploy.outputs.deploy_id }}"
