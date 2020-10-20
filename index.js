@@ -3,9 +3,11 @@ const SpeedCurve = require("speedcurve");
 const log = require("speedcurve/dist/log");
 
 async function run() {
-  if (core.isDebug()) {
+  if (core.isDebug() || true) {
     log.setLevel("verbose");
   }
+
+  core.debug(`Using speedcurve@${require("speedcurve/package.json").version}`);
 
   const apiKey = core.getInput("api_key", { required: true });
   const siteId = core.getInput("site_id");
