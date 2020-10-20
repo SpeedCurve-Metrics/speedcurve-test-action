@@ -80,7 +80,7 @@ async function run() {
   if (urlId) {
     core.info(`Creating deploy for URL ${urlId}`);
 
-    deployResults = SpeedCurve.deploys.createForUrls(apiKey, [urlId], deployNote);
+    deployResults = SpeedCurve.deploys.createForUrls(apiKey, [urlId], { note: deployNote, force: true });
 
     if (!deployResults.length || !deployResults[0].success) {
       await afterDeploy();
@@ -96,7 +96,7 @@ async function run() {
   } else if (siteId) {
     core.info(`Creating deploy for site ${siteId}`);
 
-    deployResults = await SpeedCurve.deploys.create(apiKey, [siteId], deployNote);
+    deployResults = await SpeedCurve.deploys.create(apiKey, [siteId], { note: deployNote, force: true });
 
     if (!deployResults.length || !deployResults[0].success) {
       await afterDeploy();
