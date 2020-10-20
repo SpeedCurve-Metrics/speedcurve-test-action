@@ -10,9 +10,11 @@ const SpeedCurve = __webpack_require__(78337);
 const log = __webpack_require__(76751);
 
 async function run() {
-  if (core.isDebug()) {
+  if (core.isDebug() || true) {
     log.setLevel("verbose");
   }
+
+  core.debug(`Using speedcurve@${__webpack_require__(62125)/* .version */ .i8}`);
 
   const apiKey = core.getInput("api_key", { required: true });
   const siteId = core.getInput("site_id");
