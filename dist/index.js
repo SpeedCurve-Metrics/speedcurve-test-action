@@ -51367,12 +51367,28 @@ class ApiClient {
         const url = new url_1.URL(path, this.base);
         url.username = key;
         url.password = "x";
-        for (const key in searchParams) {
-            if (typeof searchParams[key] !== "undefined") {
-                url.searchParams.set(key, searchParams[key]);
-            }
+        const preparedSearchParams = this.prepareData(searchParams);
+        for (const key in preparedSearchParams) {
+            url.searchParams.set(key, preparedSearchParams[key]);
         }
         return url;
+    }
+    /**
+     * Transform a plain JS object into an API-compatible object
+     */
+    prepareData(data) {
+        const formData = {};
+        for (const key in data) {
+            if (typeof data[key] === "boolean") {
+                // Boolean values are sent as "1" or "0"
+                formData[key] = data[key] ? "1" : "0";
+            }
+            else if (typeof data[key] !== "undefined") {
+                // Undefined/unset values are excluded
+                formData[key] = data[key].toString();
+            }
+        }
+        return formData;
     }
     // The V1 SpeedCurve API does not have consistent error reporting. This
     // method attempts to normalise errors to be of type { message: string }
@@ -51408,12 +51424,13 @@ class ApiClient {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     post(url, data = {}) {
-        log_1.default.http("POST", `${logFriendlyUrl(url)} ${truncate_1.default(JSON.stringify(data), 60)}`);
+        const formData = this.prepareData(data);
+        log_1.default.http("POST", `${logFriendlyUrl(url)} ${truncate_1.default(JSON.stringify(formData), 100)}`);
         return r
             .post({
             uri: url.href,
             json: true,
-            form: data,
+            form: formData,
             headers: {
                 "user-agent": `speedcurve-cli/${VERSION}`,
             },
@@ -51424,12 +51441,13 @@ class ApiClient {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     put(url, data = {}) {
-        log_1.default.http("PUT", `${logFriendlyUrl(url)} ${truncate_1.default(JSON.stringify(data), 60)}`);
+        const formData = this.prepareData(data);
+        log_1.default.http("PUT", `${logFriendlyUrl(url)} ${truncate_1.default(JSON.stringify(formData), 100)}`);
         return r
             .put({
             uri: url.href,
             json: true,
-            form: data,
+            form: formData,
             headers: {
                 "user-agent": `speedcurve-cli/${VERSION}`,
             },
@@ -51606,7 +51624,7 @@ exports.status = status;
  * Run on-demand tests for one or more sites. If no `siteId` parameter is
  * specified, a deploy will be created for all sites in the account
  */
-function create(key, siteIds = [], note = "", detail = "") {
+function create(key, siteIds = [], { note = "", detail = "", force = false } = {}) {
     return __awaiter(this, void 0, void 0, function* () {
         let teamName = "your SpeedCurve team";
         try {
@@ -51634,20 +51652,22 @@ function create(key, siteIds = [], note = "", detail = "") {
         const ps = sites
             .map((site) => new deploy_result_1.default(site))
             .map((result) => api_1.api
-            .deploy(key, { note, detail, site_id: result.site.siteId })
+            .deploy(key, { note, detail, force, site_id: result.site.siteId })
             .then((res) => {
             if (res.status === "success") {
                 result.updateFromApiResponse(res);
                 result.success = true;
             }
             else {
-                log_1.default.error(`Couldn't deploy site ${result.site.name}: ${res.message}`);
+                result.error = `Couldn't deploy site ${result.site.name}: ${res.message}`;
+                log_1.default.error(result.error);
             }
             return result;
         })
             .catch((err) => {
-            log_1.default.error(`Couldn't deploy site ${result.site.name}: ${err.message}`);
+            result.error = `Couldn't deploy site ${result.site.name}: ${err.message}`;
             result.success = false;
+            log_1.default.error(result.error);
             return result;
         }));
         return Promise.all(ps);
@@ -51657,7 +51677,7 @@ exports.create = create;
 /**
  * Run on-demand tests for one or more URLs.
  */
-function createForUrls(key, urlIds, note = "", detail = "") {
+function createForUrls(key, urlIds, { note = "", detail = "", force = false } = {}) {
     return __awaiter(this, void 0, void 0, function* () {
         let teamName = "your SpeedCurve team";
         try {
@@ -51684,20 +51704,22 @@ function createForUrls(key, urlIds, note = "", detail = "") {
         const ps = urls
             .map((url) => new deploy_result_1.default(url))
             .map((result) => api_1.api
-            .deploy(key, { note, detail, url_id: result.url.urlId })
+            .deploy(key, { note, detail, force, url_id: result.url.urlId })
             .then((res) => {
             if (res.status === "success") {
                 result.updateFromApiResponse(res);
                 result.success = true;
             }
             else {
-                log_1.default.error(`Couldn't deploy ${result.url.toString()}: ${res.message}`);
+                result.error = `Couldn't deploy ${result.url.toString()}: ${res.message}`;
+                log_1.default.error(result.error);
             }
             return result;
         })
             .catch((err) => {
-            log_1.default.error(`Couldn't deploy ${result.url.toString()}: ${err.message}`);
+            result.error = `Couldn't deploy ${result.url.toString()}: ${err.message}`;
             result.success = false;
+            log_1.default.error(result.error);
             return result;
         }));
         return Promise.all(ps);
