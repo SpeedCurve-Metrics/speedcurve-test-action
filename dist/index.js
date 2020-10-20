@@ -9,10 +9,8 @@ const core = __webpack_require__(42186);
 const SpeedCurve = __webpack_require__(78337);
 const log = __webpack_require__(76751);
 
-SpeedCurve.api.base = "http://local.api.speedcurve.com/"
-
 async function run() {
-  if (core.isDebug() || true) {
+  if (core.isDebug()) {
     log.setLevel("verbose");
   }
 
