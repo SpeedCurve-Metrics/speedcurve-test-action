@@ -64380,7 +64380,7 @@ module.exports = JSON.parse("[\"ac\",\"com.ac\",\"edu.ac\",\"gov.ac\",\"net.ac\"
 /***/ ((module) => {
 
 "use strict";
-module.exports = {"i8":"1.4.0"};
+module.exports = {"i8":"2.0.0"};
 
 /***/ }),
 
