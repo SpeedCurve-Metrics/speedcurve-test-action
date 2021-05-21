@@ -18,7 +18,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.6",
+    "@actions/core": "^1.2.7",
     "speedcurve": "^2.0.0"
   },
   "devDependencies": {
