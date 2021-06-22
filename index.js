@@ -3,7 +3,7 @@ const SpeedCurve = require("speedcurve");
 const log = require("speedcurve/dist/log");
 
 async function run() {
-  if (core.isDebug() || true) {
+  if (core.isDebug()) {
     log.setLevel("verbose");
   }
 
