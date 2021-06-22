@@ -1,6 +1,6 @@
 {
   "name": "speedcurve-test-action",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "scripts": {
     "lint": "eslint --fix . && prettier --write .",
