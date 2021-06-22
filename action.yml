@@ -1,21 +1,21 @@
-name: 'Run SpeedCurve Tests'
-description: 'Run SpeedCurve tests as part of your workflow.'
-author: 'SpeedCurve'
+name: "Run SpeedCurve Tests"
+description: "Run SpeedCurve tests as part of your workflow."
+author: "SpeedCurve"
 branding:
-  icon: 'bar-chart-2'
-  color: 'blue'
+  icon: "bar-chart-2"
+  color: "blue"
 
 inputs:
   api_key:
-    description: 'SpeedCurve API token'
+    description: "SpeedCurve API token"
     required: true
   site_id:
-    description: 'ID of the site to deploy'
+    description: "ID of the site to deploy"
   url_id:
-    description: 'ID of the URL to deploy'
+    description: "ID of the URL to deploy"
   replace_origin:
-    description: 'If siteID is specified, all of the URLs in the site will be tested against this origin'
+    description: "If siteID is specified, all of the URLs in the site will be tested against this origin"
 
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"

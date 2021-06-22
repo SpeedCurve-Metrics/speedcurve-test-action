@@ -10,28 +10,29 @@ This action requires a [SpeedCurve](https://speedcurve.com/) account and a valid
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
+  - uses: actions/checkout@v2
 
-- uses: SpeedCurve-Metrics/speedcurve-test-action@v1
-  with:
-    api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
-    url_id: 123456 # URL IDs can be retrieved from the /v1/sites API endpoint,
-                   # or by running the list-sites command with speedcurve-cli.
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1
+    with:
+      api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
+      url_id:
+        123456 # URL IDs can be retrieved from the /v1/sites API endpoint,
+        # or by running the list-sites command with speedcurve-cli.
 ```
 
 ## Run tests for an entire site
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
+  - uses: actions/checkout@v2
 
-- uses: SpeedCurve-Metrics/speedcurve-test-action@v1
-  with:
-    api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
-    site_id: 123456 # Site IDs can be retrieved from the /v1/sites API endpoint,
-                    # or by running the list-sites command with speedcurve-cli.
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1
+    with:
+      api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
+      site_id:
+        123456 # Site IDs can be retrieved from the /v1/sites API endpoint,
+        # or by running the list-sites command with speedcurve-cli.
 ```
-
 
 ## Run tests against a dynamically-generated deployment URL
 
@@ -39,19 +40,19 @@ This example uses the [Netlify Actions](https://github.com/nwtgck/actions-netlif
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
+  - uses: actions/checkout@v2
 
-- id: netlify-deploy
-  uses: nwtgck/actions-netlify@v1.1
-  with:
-    publish-dir: './dist'
-  env:
-    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  - id: netlify-deploy
+    uses: nwtgck/actions-netlify@v1.1
+    with:
+      publish-dir: "./dist"
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
-- uses: SpeedCurve-Metrics/speedcurve-test-action@v1
-  with:
-    api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
-    site_id: 123456
-    replace_origin: ${{ steps.netlify-deploy.outputs.deploy-url }}
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1
+    with:
+      api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
+      site_id: 123456
+      replace_origin: ${{ steps.netlify-deploy.outputs.deploy-url }}
 ```
