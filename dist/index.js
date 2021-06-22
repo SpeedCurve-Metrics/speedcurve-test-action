@@ -45343,7 +45343,7 @@ Object.defineProperty(request, 'debug', {
 
 
 var caseless = __nccwpck_require__(35684)
-var uuid = __nccwpck_require__(71435)
+var uuid = __nccwpck_require__(80824)
 var helpers = __nccwpck_require__(74845)
 
 var md5 = helpers.md5
@@ -46034,7 +46034,7 @@ exports.defer = defer
 "use strict";
 
 
-var uuid = __nccwpck_require__(71435)
+var uuid = __nccwpck_require__(80824)
 var CombinedStream = __nccwpck_require__(85443)
 var isstream = __nccwpck_require__(83362)
 var Buffer = __nccwpck_require__(21867).Buffer
@@ -46157,7 +46157,7 @@ exports.$ = Multipart
 var url = __nccwpck_require__(78835)
 var qs = __nccwpck_require__(22760)
 var caseless = __nccwpck_require__(35684)
-var uuid = __nccwpck_require__(71435)
+var uuid = __nccwpck_require__(80824)
 var oauth = __nccwpck_require__(43248)
 var crypto = __nccwpck_require__(76417)
 var Buffer = __nccwpck_require__(21867).Buffer
@@ -49138,90 +49138,6 @@ module.exports = '2.5.0'
 
 /***/ }),
 
-/***/ 67087:
-/***/ ((module) => {
-
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-var byteToHex = [];
-for (var i = 0; i < 256; ++i) {
-  byteToHex[i] = (i + 0x100).toString(16).substr(1);
-}
-
-function bytesToUuid(buf, offset) {
-  var i = offset || 0;
-  var bth = byteToHex;
-  // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
-  return ([
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]]
-  ]).join('');
-}
-
-module.exports = bytesToUuid;
-
-
-/***/ }),
-
-/***/ 9117:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// Unique ID creation requires a high quality random # generator.  In node.js
-// this is pretty straight-forward - we use the crypto API.
-
-var crypto = __nccwpck_require__(76417);
-
-module.exports = function nodeRNG() {
-  return crypto.randomBytes(16);
-};
-
-
-/***/ }),
-
-/***/ 71435:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var rng = __nccwpck_require__(9117);
-var bytesToUuid = __nccwpck_require__(67087);
-
-function v4(options, buf, offset) {
-  var i = buf && offset || 0;
-
-  if (typeof(options) == 'string') {
-    buf = options === 'binary' ? new Array(16) : null;
-    options = null;
-  }
-  options = options || {};
-
-  var rnds = options.random || (options.rng || rng)();
-
-  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-  // Copy bytes to buffer, if provided
-  if (buf) {
-    for (var ii = 0; ii < 16; ++ii) {
-      buf[i + ii] = rnds[ii];
-    }
-  }
-
-  return buf || bytesToUuid(rnds);
-}
-
-module.exports = v4;
-
-
-/***/ }),
-
 /***/ 70304:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -51210,6 +51126,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.api = exports.ApiClient = void 0;
+/**
+ * @module SpeedCurve/api
+ */
 const r = __importStar(__nccwpck_require__(38313));
 const url_1 = __nccwpck_require__(78835);
 const log_1 = __importDefault(__nccwpck_require__(76751));
@@ -51377,6 +51296,7 @@ exports.api = new ApiClient();
 /**
  * Get the status of SpeedCurve performance budgets
  *
+ * @module SpeedCurve/budgets
  * @example
  *
  * <br>
@@ -51422,6 +51342,7 @@ exports.getByDeployId = getByDeployId;
 /**
  * Create and manage SpeedCurve deploys
  *
+ * @module SpeedCurve/deploys
  * @example
  *
  * <br>
@@ -51662,7 +51583,7 @@ class Logger {
         this.stdout(JSON.stringify(value));
     }
     stdout(message) {
-        npmlog.stdout("", message);
+        process.stdout.write(message);
     }
     verbose(message) {
         npmlog.verbose("", message);
@@ -51928,6 +51849,7 @@ exports.default = Url;
 /**
  * Retrieve information about SpeedCurve sites
  *
+ * @module SpeedCurve/sites
  * @example
  *
  * <br>
@@ -52017,6 +51939,7 @@ exports.getAllWithTests = getAllWithTests;
 /**
  * Retrieve synthetic test results
  *
+ * @module SpeedCurve/tests
  * @example
  *
  * <br>
@@ -52063,6 +51986,7 @@ exports.getForUrl = getForUrl;
 /**
  * Manage URLs in a SpeedCurve account
  *
+ * @module SpeedCurve/urls
  * @example
  *
  * <br>
@@ -63595,6 +63519,90 @@ module.exports = __nccwpck_require__(31669).deprecate;
 
 /***/ }),
 
+/***/ 92707:
+/***/ ((module) => {
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
+  return ([
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]]
+  ]).join('');
+}
+
+module.exports = bytesToUuid;
+
+
+/***/ }),
+
+/***/ 15859:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Unique ID creation requires a high quality random # generator.  In node.js
+// this is pretty straight-forward - we use the crypto API.
+
+var crypto = __nccwpck_require__(76417);
+
+module.exports = function nodeRNG() {
+  return crypto.randomBytes(16);
+};
+
+
+/***/ }),
+
+/***/ 80824:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+var rng = __nccwpck_require__(15859);
+var bytesToUuid = __nccwpck_require__(92707);
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options === 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+
+/***/ }),
+
 /***/ 81692:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -64314,7 +64322,7 @@ module.exports = JSON.parse('["ac","com.ac","edu.ac","gov.ac","net.ac","mil.ac",
 /***/ ((module) => {
 
 "use strict";
-module.exports = {"i8":"2.0.1"};
+module.exports = {"i8":"2.0.5"};
 
 /***/ }),
 
