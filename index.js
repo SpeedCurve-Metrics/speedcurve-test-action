@@ -13,11 +13,14 @@ async function run() {
   const siteId = core.getInput("site_id");
   const urlId = core.getInput("url_id");
   const replaceOrigin = core.getInput("replace_origin");
+  const noteParam = core.getInput("note");
 
   const workflowName = process.env["GITHUB_WORKFLOW"];
   const runNumber = process.env["GITHUB_RUN_NUMBER"];
   const repositoryName = process.env["GITHUB_REPOSITORY"];
-  const deployNote = `Run #${runNumber} of workflow ${workflowName} in ${repositoryName}`;
+  const defaultNote = `Run #${runNumber} of workflow ${workflowName} in ${repositoryName}`;
+
+  const deployNote = noteParam || defaultNote;
 
   core.setSecret(apiKey);
 

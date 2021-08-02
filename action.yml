@@ -15,6 +15,8 @@ inputs:
     description: "ID of the URL to deploy"
   replace_origin:
     description: "If siteID is specified, all of the URLs in the site will be tested against this origin"
+  note: 
+    description: "Custom title of the deploy"
 
 runs:
   using: "node12"
