@@ -18,6 +18,6 @@ jobs:
         uses: ./
         with:
           api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
-          site_id: 335016
+          site_id: 258596
 
       - run: echo "The SpeedCurve deploy ID is ${{ steps.speedcurve_deploy.outputs.deploy_id }}"
