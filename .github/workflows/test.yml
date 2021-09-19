@@ -13,11 +13,15 @@ jobs:
     name: Test
     steps:
       - uses: actions/checkout@v2
+      
+      - id: github
+        run: echo ::set-output name=ref::$GITHUB_REF
 
       - id: speedcurve_deploy
         uses: ./
         with:
           api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
           site_id: 258596
+          note: speedcurve-test-action running from ${{ steps.github.outputs.ref }}
 
       - run: echo "The SpeedCurve deploy ID is ${{ steps.speedcurve_deploy.outputs.deploy_id }}"
