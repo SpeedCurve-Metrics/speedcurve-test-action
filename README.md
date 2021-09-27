@@ -56,3 +56,18 @@ steps:
       site_id: 123456
       replace_origin: ${{ steps.netlify-deploy.outputs.deploy-url }}
 ```
+
+## Add custom deploy note
+
+The `note` input parameter lets you add a custom message to be displayed as a run's title on the app's dashboards.
+
+```yaml
+steps:
+  - uses: actions/checkout@v2
+
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1
+    with:
+      api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
+      site_id: 123456
+      note: "#$GITHUB_RUN_NUMBER - New build custom note"
+```
