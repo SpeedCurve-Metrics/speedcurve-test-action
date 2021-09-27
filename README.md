@@ -12,7 +12,7 @@ This action requires a [SpeedCurve](https://speedcurve.com/) account and a valid
 steps:
   - uses: actions/checkout@v2
 
-  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1.2.1
     with:
       api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
       url_id:
@@ -26,7 +26,7 @@ steps:
 steps:
   - uses: actions/checkout@v2
 
-  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1.2.1
     with:
       api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
       site_id:
@@ -50,7 +50,7 @@ steps:
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
-  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1.2.1
     with:
       api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
       site_id: 123456
@@ -59,13 +59,13 @@ steps:
 
 ## Add custom deploy note
 
-The `note` input parameter lets you add a custom message to be displayed as a run's title on the app's dashboards.
+The `note` input parameter lets you add a custom message which will be displayed as a run's title on the app's dashboards.
 
 ```yaml
 steps:
   - uses: actions/checkout@v2
 
-  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1.2.1
     with:
       api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
       site_id: 123456
