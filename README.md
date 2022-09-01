@@ -12,7 +12,7 @@ This action requires a [SpeedCurve](https://speedcurve.com/) account and a valid
 steps:
   - uses: actions/checkout@v2
 
-  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1.2.1
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1.2.2
     with:
       api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
       url_id:
@@ -26,7 +26,7 @@ steps:
 steps:
   - uses: actions/checkout@v2
 
-  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1.2.1
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1.2.2
     with:
       api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
       site_id:
@@ -65,7 +65,7 @@ The `note` input parameter lets you add a custom message which will be displayed
 steps:
   - uses: actions/checkout@v2
 
-  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1.2.1
+  - uses: SpeedCurve-Metrics/speedcurve-test-action@v1.2.2
     with:
       api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
       site_id: 123456
