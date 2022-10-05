@@ -18,8 +18,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "speedcurve": "^2.0.0"
+    "@actions/core": "^1.9.1",
+    "speedcurve": "^2.0.8"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.28.6",
