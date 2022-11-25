@@ -14,6 +14,7 @@ async function run() {
   const urlId = core.getInput("url_id");
   const replaceOrigin = core.getInput("replace_origin");
   const noteParam = core.getInput("note");
+  const detailParam = core.getInput("detail");
 
   const workflowName = process.env["GITHUB_WORKFLOW"];
   const runNumber = process.env["GITHUB_RUN_NUMBER"];
@@ -21,6 +22,7 @@ async function run() {
   const defaultNote = `Run #${runNumber} of workflow ${workflowName} in ${repositoryName}`;
 
   const deployNote = noteParam || defaultNote;
+  const deployDetail = detailParam || "";
 
   core.setSecret(apiKey);
 
@@ -87,6 +89,7 @@ async function run() {
 
     deployResults = SpeedCurve.deploys.createForUrls(apiKey, [urlId], {
       note: deployNote,
+      detail: deployDetail,
       force: true,
     });
 
@@ -106,6 +109,7 @@ async function run() {
 
     deployResults = await SpeedCurve.deploys.create(apiKey, [siteId], {
       note: deployNote,
+      detail: deployDetail,
       force: true,
     });
 
