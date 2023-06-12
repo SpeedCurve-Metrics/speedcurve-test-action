@@ -4,7 +4,7 @@
 
 # Usage
 
-This action requires a [SpeedCurve](https://speedcurve.com/) account and a valid [SpeedCurve API key](https://support.speedcurve.com/en/articles/415403-synthetic-api). We recommend that you store your API key as a [GitHub secret](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets).
+This action requires a [SpeedCurve](https://speedcurve.com/) account and a valid [SpeedCurve API key](https://support.speedcurve.com/docs/rest-api#finding-your-api-key). We recommend that you store your API key as a [GitHub secret](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets).
 
 ## Run tests for a single URL
 
