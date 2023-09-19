@@ -70,4 +70,5 @@ steps:
       api_key: ${{ secrets.SPEEDCURVE_API_KEY }}
       site_id: 123456
       note: "#$GITHUB_RUN_NUMBER - New build custom note"
+      detail: "You can put more information in the note detail field."
 ```
