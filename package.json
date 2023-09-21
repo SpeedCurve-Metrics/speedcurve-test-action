@@ -22,7 +22,7 @@
     "speedcurve": "^2.0.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.28.6",
+    "@vercel/ncc": "^0.38.0",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.1.4",
@@ -31,5 +31,8 @@
   },
   "prettier": {
     "printWidth": 120
+  },
+  "engines": {
+    "node": "^20"
   }
 }
